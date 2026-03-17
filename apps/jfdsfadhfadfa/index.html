@@ -736,6 +736,39 @@
 </div>
 
 <script>
+  (function () {
+    function getOrCreateDemoUserId() {
+      const key = "demoUserId";
+      let v = localStorage.getItem(key);
+      if (!v) {
+        v = "demo_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+        localStorage.setItem(key, v);
+      }
+      return v;
+    }
+
+    async function logEvent(payload) {
+      try {
+        const body = {
+          page: payload.page || (document.title || "demo"),
+          action: payload.action,
+          result: payload.result,
+          demoUserId: getOrCreateDemoUserId(),
+          email: payload.email || ""
+        };
+        await fetch("/api/log", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify(body)
+        });
+      } catch (_e) {
+        // best effort
+      }
+    }
+
+    window.demoTelemetry = { log: logEvent };
+  })();
+
   // ── Supabase Config ──────────────────────────────────────────────
   const SUPABASE_URL = 'https://ycfstlaakaamxgxlbora.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnN0bGFha2FhbXhneGxib3JhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NDAyNDksImV4cCI6MjA4OTIxNjI0OX0.cSvcpbCW6sP9nX6VT9zBwUXGeAQV3IuZdGON_6dsuEI';
