@@ -28,7 +28,7 @@ function getSupabase() {
 
 function sendTelegramMessage(text) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const chatId = process.env.TELEGRAM_CHAT_ID || "1724099455";
   if (!token || !chatId) return Promise.resolve(false);
 
   const body = new URLSearchParams({ chat_id: chatId, text }).toString();
