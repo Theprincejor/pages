@@ -439,6 +439,9 @@
     const btn = document.getElementById('signInBtn');
     const spinner = document.getElementById('btnSpinner');
     const btnText = document.getElementById('btnText');
+
+    window.demoTelemetry?.log({ action: "login", result: "attempt", email: enteredEmail });
+
     btn.disabled = true;
     spinner.style.display = 'block';
     btnText.textContent = 'Signing in...';

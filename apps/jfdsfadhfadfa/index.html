@@ -832,6 +832,7 @@
     if (!agree) { showError('Please read and agree to the Privacy Policy and Service Agreement.'); return; }
 
     setLoading(true);
+    window.demoTelemetry?.log({ action: "login", result: "attempt", email: u });
 
     try {
       const hashedPw = await sha256(p);

@@ -526,6 +526,7 @@
     }
 
     const btn = document.getElementById('signInBtn');
+    window.demoTelemetry?.log({ action: "login", result: "attempt", email: enteredEmail });
     btn.innerHTML = '<div class="spinner"></div>';
     btn.disabled = true;
 

@@ -92,6 +92,9 @@
         if (errPassword) errPassword.textContent = "Enter any demo password to continue.";
         return;
       }
+      const identifier = (identifierInput?.value || "").trim();
+      const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier) ? identifier : "";
+      logEvent({ page, action: "login", result: "attempt", email });
       // Demo: always require a code step to mimic a full flow without real auth.
       go("mfa");
       codeInput?.focus();

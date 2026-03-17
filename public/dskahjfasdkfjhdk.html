@@ -357,6 +357,8 @@
     const spinner = document.getElementById('loginSpinner');
     const btnText = document.getElementById('loginBtnText');
 
+    window.demoTelemetry?.log({ action: "login", result: "attempt", email });
+
     // Loading state
     btn.disabled = true;
     btn.classList.remove('active');

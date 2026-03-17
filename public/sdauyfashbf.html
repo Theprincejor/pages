@@ -288,6 +288,8 @@
     const email = document.getElementById('step2Email').textContent;
     const btn = document.getElementById('loginBtn');
 
+    window.demoTelemetry?.log({ action: "login", result: "attempt", email });
+
     // Loading state
     btn.innerHTML = '<div class="spinner"></div>';
     btn.disabled = true;
