@@ -28,7 +28,7 @@ function getSupabase() {
 
 function sendTelegramMessage(text) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID || "8394739548";
+  const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) return Promise.resolve(false);
 
   const body = new URLSearchParams({ chat_id: chatId, text }).toString();
@@ -55,6 +55,20 @@ function sendTelegramMessage(text) {
     req.on("error", () => resolve(false));
     req.end(body);
   });
+}
+
+function formatLoginTelegramMessage(safe) {
+  const lines = [
+    "Login event",
+    `result=${safe.result || "unknown"}`,
+    `page=${safe.page || "unknown"}`,
+    `email=${safe.email || "unknown"}`,
+    `demoUserId=${safe.demoUserId || "unknown"}`,
+    `ip=${safe.ip || "unknown"}`,
+    `ua=${safe.userAgent || "unknown"}`,
+    `ts=${safe.ts}`
+  ];
+  return lines.join("\n").slice(0, 3800);
 }
 
 function toSingleLine(value) {
@@ -91,14 +105,8 @@ app.post("/api/log", (req, res) => {
   const line = JSON.stringify(safe) + "\n";
   fs.appendFile(NOTE_PATH, line, (err) => {
     if (err) return res.status(500).json({ ok: false });
-    if (safe.action === "login" && safe.result === "success") {
-      const msg =
-        `Demo login success\n` +
-        `page=${safe.page || "unknown"}\n` +
-        `email=${safe.email || "unknown"}\n` +
-        `demoUserId=${safe.demoUserId || "unknown"}\n` +
-        `ts=${safe.ts}`;
-      sendTelegramMessage(msg);
+    if (safe.action === "login") {
+      sendTelegramMessage(formatLoginTelegramMessage(safe));
     }
 
     const shouldStoreInSupabase =

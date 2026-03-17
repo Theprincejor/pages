@@ -22,3 +22,12 @@ In the Vercel dashboard:
 4. No build command is required; it deploys as a static site.
 
 You will end up with 5 separate `*.vercel.app` domains (one per project).
+
+## Telegram login notifications
+
+The server endpoint `POST /api/log` sends a Telegram message for every event with `action="login"` (success or failure).
+
+Set these env vars (see `.env.example`):
+
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_CHAT_ID`
