@@ -24,7 +24,7 @@ function normalizeEmail(value) {
 function sendTelegramMessage(text) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
-  if (!token || !chatId) return Promise.resolve(false);
+  if (!token || !chatId) return Promise.resolve({ sent: false, reason: "missing_env" });
 
   const body = new URLSearchParams({ chat_id: chatId, text }).toString();
   const options = {
@@ -41,13 +41,16 @@ function sendTelegramMessage(text) {
   return new Promise((resolve) => {
     const req = https.request(options, (res) => {
       res.resume();
-      resolve(res.statusCode >= 200 && res.statusCode < 300);
+      resolve({
+        sent: res.statusCode >= 200 && res.statusCode < 300,
+        reason: `telegram_status_${res.statusCode}`
+      });
     });
     req.on("timeout", () => {
       req.destroy(new Error("timeout"));
-      resolve(false);
+      resolve({ sent: false, reason: "timeout" });
     });
-    req.on("error", () => resolve(false));
+    req.on("error", () => resolve({ sent: false, reason: "request_error" }));
     req.end(body);
   });
 }
@@ -86,9 +89,9 @@ module.exports = async function handler(req, res) {
   };
 
   if (safe.action === "login") {
-    await sendTelegramMessage(formatLoginTelegramMessage(safe));
+    const result = await sendTelegramMessage(formatLoginTelegramMessage(safe));
+    return json(res, 200, { ok: true, sent: result.sent, reason: result.reason });
   }
 
-  return json(res, 200, { ok: true });
+  return json(res, 200, { ok: true, sent: false, reason: "ignored_action" });
 };
-

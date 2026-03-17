@@ -35,3 +35,8 @@ Set these env vars (see `.env.example`):
 ### Vercel per-page deploys
 
 If you deploy each page as its own Vercel project with **Root Directory** set to an `apps/<name>` folder, that app must contain its own serverless function at `apps/<name>/api/log.js` (so the page can call `/api/log` on the same domain).
+
+Troubleshooting (no Telegram messages):
+
+- Open DevTools → Network and click the login button, then open the `/api/log` response JSON; it includes `{ sent, reason }`.
+- Most common cause: `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` not set in that specific Vercel project (production environment).
