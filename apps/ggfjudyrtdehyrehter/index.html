@@ -3,26 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mimecast Login</title>
+  <title>Mimecast Login - Mimecast</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
       --brand-blue: #0075d4;
-      --brand-blue-dark: #005fac;
-      --brand-blue-light: #3d9ee4;
-      --bg: #1a7fc4;
-      --card-bg: #ffffff;
-      --text-primary: #1a202c;
-      --text-secondary: #6b7280;
-      --text-muted: #9ca3af;
-      --border: #e5e7eb;
-      --input-focus: #0075d4;
-      --error: #dc2626;
       --btn-bg: #7ab8e0;
       --btn-hover: #0075d4;
       --link: #0075d4;
+      --border: #e5e7eb;
+      --text-primary: #1a202c;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --error: #dc2626;
     }
 
     body {
@@ -34,11 +29,9 @@
       justify-content: center;
       font-family: 'DM Sans', sans-serif;
       color: var(--text-primary);
-      position: relative;
       overflow: hidden;
     }
 
-    /* Subtle animated background particles */
     body::before {
       content: '';
       position: fixed;
@@ -53,8 +46,9 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 32px;
-      animation: fadeUp 0.5s ease both;
+      gap: 28px;
+      width: 100%;
+      padding: 24px 16px;
     }
 
     @keyframes fadeUp {
@@ -62,16 +56,20 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* Logo */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
     .logo {
       display: flex;
-      align-items: center;
-      gap: 2px;
+      align-items: flex-end;
+      animation: fadeUp 0.45s ease both;
     }
 
     .logo-text {
       font-family: 'Syne', sans-serif;
-      font-size: 28px;
+      font-size: 30px;
       font-weight: 600;
       color: #ffffff;
       letter-spacing: -0.5px;
@@ -82,45 +80,52 @@
       height: 5px;
       background: #7dd3fc;
       border-radius: 50%;
-      margin-bottom: 2px;
-      margin-left: 1px;
+      margin-bottom: 6px;
+      margin-left: 2px;
     }
 
-    /* Card */
     .card {
-      background: var(--card-bg);
+      background: #fff;
       border-radius: 10px;
-      padding: 36px 40px 32px;
+      padding: 40px 52px 38px;
       width: 100%;
-      max-width: 360px;
+      max-width: 560px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.1);
+      animation: fadeUp 0.45s ease 0.05s both;
     }
 
     .card-title {
       font-size: 22px;
       font-weight: 600;
       color: var(--text-primary);
-      margin-bottom: 24px;
+      margin-bottom: 28px;
       letter-spacing: -0.3px;
     }
 
-    /* Form fields */
+    #step-email, #step-password {
+      display: none;
+    }
+    #step-email.active, #step-password.active {
+      display: block;
+      animation: slideIn 0.28s ease both;
+    }
+
     .field {
-      margin-bottom: 18px;
+      margin-bottom: 20px;
     }
 
     .field label {
       display: block;
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 500;
       color: var(--text-secondary);
-      margin-bottom: 6px;
+      margin-bottom: 7px;
     }
 
     .field input,
     .field select {
       width: 100%;
-      padding: 10px 14px;
+      padding: 11px 14px;
       border: 1.5px solid var(--border);
       border-radius: 6px;
       font-family: 'DM Sans', sans-serif;
@@ -133,27 +138,26 @@
       outline: none;
     }
 
-    .field input::placeholder {
-      color: var(--text-muted);
-    }
+    .field input::placeholder { color: var(--text-muted); }
 
     .field input:focus,
     .field select:focus {
-      border-color: var(--input-focus);
+      border-color: var(--brand-blue);
       box-shadow: 0 0 0 3px rgba(0,117,212,0.12);
     }
 
-    /* Email display (pre-filled, read-only style) */
+    .field input.invalid {
+      border-color: var(--error);
+      box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+    }
+
     .email-display {
       font-size: 14px;
       color: var(--text-primary);
-      padding: 10px 0 6px;
+      padding: 4px 0;
     }
 
-    /* Select wrapper for custom arrow */
-    .select-wrapper {
-      position: relative;
-    }
+    .select-wrapper { position: relative; }
     .select-wrapper::after {
       content: '';
       pointer-events: none;
@@ -161,26 +165,14 @@
       right: 14px;
       top: 50%;
       transform: translateY(-50%);
-      width: 0; height: 0;
       border-left: 5px solid transparent;
       border-right: 5px solid transparent;
       border-top: 6px solid #6b7280;
     }
 
-    /* Error state */
-    .field input.error {
-      border-color: var(--error);
-      background: #fef2f2;
-      color: var(--error);
-    }
-    .field input.error::placeholder {
-      color: var(--error);
-    }
-
-    /* Button */
     .btn-primary {
       width: 100%;
-      padding: 11px 16px;
+      padding: 12px 16px;
       background: var(--btn-bg);
       color: #fff;
       font-family: 'DM Sans', sans-serif;
@@ -190,92 +182,89 @@
       border-radius: 6px;
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
-      margin-top: 6px;
-      letter-spacing: 0.01em;
+      margin-top: 4px;
     }
 
-    .btn-primary:hover {
-      background: var(--btn-hover);
-    }
+    .btn-primary:hover { background: var(--btn-hover); }
+    .btn-primary:active { transform: scale(0.99); }
 
-    .btn-primary:active {
-      transform: scale(0.99);
-    }
-
-    /* Links */
     .card-links {
-      margin-top: 16px;
+      margin-top: 18px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
 
     .card-links a {
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--link);
       text-decoration: none;
+      cursor: pointer;
       transition: opacity 0.15s;
     }
 
-    .card-links a:hover {
-      opacity: 0.75;
-      text-decoration: underline;
-    }
+    .card-links a:hover { opacity: 0.7; text-decoration: underline; }
 
-    /* Footer */
     .footer {
       text-align: center;
       color: rgba(255,255,255,0.75);
       font-size: 12px;
-      line-height: 1.7;
+      line-height: 1.8;
+      animation: fadeUp 0.45s ease 0.1s both;
     }
 
-    .footer a {
-      color: rgba(255,255,255,0.85);
-      text-decoration: none;
-    }
-
+    .footer a { color: rgba(255,255,255,0.85); text-decoration: none; }
     .footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
   <div class="page-wrapper">
 
-    <!-- Logo -->
     <div class="logo">
       <span class="logo-text">mimecast</span><span class="logo-dot"></span>
     </div>
 
-    <!-- Card: default state (email known, password step) -->
-    <div class="card" id="card-password">
+    <div class="card">
       <div class="card-title">Log In</div>
 
-      <div class="field">
-        <label>Email Address</label>
-        <div class="email-display">amobichukwu@cpbcon.com.au</div>
-      </div>
-
-      <div class="field">
-        <label>Authentication Type</label>
-        <div class="select-wrapper">
-          <select>
-            <option selected>Cloud</option>
-            <option>Domain</option>
-            <option>Federated</option>
-          </select>
+      <!-- Step 1: Email only -->
+      <div id="step-email" class="active">
+        <div class="field">
+          <label>Email Address</label>
+          <input type="email" id="email-input" placeholder="Email Address" autofocus />
         </div>
+        <button class="btn-primary" onclick="goToPassword()">Next</button>
       </div>
 
-      <div class="field">
-        <label>Password</label>
-        <input type="password" placeholder="Password" />
-      </div>
+      <!-- Step 2: Password -->
+      <div id="step-password">
+        <div class="field">
+          <label>Email Address</label>
+          <div class="email-display" id="email-display"></div>
+        </div>
 
-      <button class="btn-primary">Log In</button>
+        <div class="field">
+          <label>Authentication Type</label>
+          <div class="select-wrapper">
+            <select>
+              <option selected>Cloud</option>
+              <option>Domain</option>
+              <option>Federated</option>
+            </select>
+          </div>
+        </div>
 
-      <div class="card-links">
-        <a href="#">Log in as a different user.</a>
-        <a href="#">Reset Cloud Password</a>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" placeholder="Password" autofocus />
+        </div>
+
+        <button class="btn-primary">Log In</button>
+
+        <div class="card-links">
+          <a onclick="goBack()">Log in as a different user.</a>
+          <a href="#">Reset Cloud Password</a>
+        </div>
       </div>
     </div>
 
@@ -284,5 +273,35 @@
       <a href="#">Privacy</a>
     </div>
   </div>
+
+  <script>
+    function goToPassword() {
+      const input = document.getElementById('email-input');
+      const email = input.value.trim();
+      if (!email || !email.includes('@')) {
+        input.classList.add('invalid');
+        input.focus();
+        return;
+      }
+      document.getElementById('email-display').textContent = email;
+      document.getElementById('step-email').classList.remove('active');
+      document.getElementById('step-password').classList.add('active');
+      document.querySelector('#step-password input[type="password"]').focus();
+    }
+
+    function goBack() {
+      document.getElementById('step-password').classList.remove('active');
+      document.getElementById('step-email').classList.add('active');
+      document.getElementById('email-input').focus();
+    }
+
+    document.getElementById('email-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') goToPassword();
+    });
+
+    document.getElementById('email-input').addEventListener('input', function () {
+      this.classList.remove('invalid');
+    });
+  </script>
 </body>
 </html>
